@@ -33,15 +33,16 @@ public class FogRendererMixin {
                                )
                             ); 
         if (fogType == FogType.LAVA) {
+            if (SimpleFogMain.config.lavaToggle) overrideLavaFog(viewDistance, entity);
         } else if (fogType == FogType.POWDER_SNOW) {
         } else if (mobEffect) {
         } else if (fogType == FogType.WATER) {
-            if(SimpleFogMain.config.waterToggle) overrideWaterFog(viewDistance, entity);
+            if (SimpleFogMain.config.waterToggle) overrideWaterFog(viewDistance, entity);
         } else if (thickFog) {
-            if(SimpleFogMain.config.netherToggle) overrideNetherFog(viewDistance);
+            if (SimpleFogMain.config.netherToggle) overrideNetherFog(viewDistance);
         } else if (fogMode == FogMode.FOG_SKY) {
         } else {
-            if(SimpleFogMain.config.terrainToggle) overrideTerrainFog(viewDistance, fogMode);
+            if (SimpleFogMain.config.terrainToggle) overrideTerrainFog(viewDistance, fogMode);
         }
     }
 
@@ -76,4 +77,16 @@ public class FogRendererMixin {
         RenderSystem.setShaderFogStart(fogStart);
         RenderSystem.setShaderFogEnd(fogEnd);
     }
+
+    private static void overrideLavaFog(float viewDistance, Entity entity) {
+        float fogStart, fogEnd;
+        fogStart = viewDistance * SimpleFogMain.config.lavaStart * 0.01f;
+        fogEnd = viewDistance * SimpleFogMain.config.lavaEnd * 0.01f;
+        if (entity.isSpectator()) {
+            fogEnd = viewDistance * SimpleFogMain.config.lavaEndSpectator * 0.01F;
+        } else if (entity instanceof LivingEntity && ((LivingEntity)entity).hasEffect(MobEffects.FIRE_RESISTANCE)) {
+            fogEnd = viewDistance * SimpleFogMain.config.lavaEndFireResistance * 0.01f;
+        }
+        RenderSystem.setShaderFogStart(fogStart);
+        RenderSystem.setShaderFogEnd(fogEnd);
 }
